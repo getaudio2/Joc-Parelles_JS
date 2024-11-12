@@ -19,9 +19,8 @@ let win;
 
 function comencarPartida(){
     if(nomjugadorObj.value){
-        //win = window.open("joc.html", "joc", "width=400,height=400");
-        window.location.assign("joc.html", "joc");
-        document.cookie = "nomJugador=" + nomjugadorObj.value + "; expires=Thu, 7 Nov 2024 19:13:00 UTC; path=/";
+        win = window.open("joc.html", "joc");
+        document.cookie = "nomJugador=" + nomjugadorObj.value;
         //localStorage.setItem("nom", nomjugadorObj.value);
     } else {
         alert("Has d'informar el nom d'un jugador");
@@ -33,7 +32,14 @@ function borrarPartida(){
 }
 
 function infoNavegador(){
-    infoNavegadorObj.textContent = navigator.userAgent;
+    navegador = navigator.userAgent;
+    infoNavegadorObj.textContent = navegador;
+
+    if (navegador.includes("Chrome")) {
+        document.body.style.backgroundColor = "#a4eda5";
+    } else {
+        document.body.style.backgroundColor = "orange";
+    }
 }
 
 function infoURL(){

@@ -4,8 +4,8 @@ const nom = document.getElementById("nom");
 const btnInstruccions = document.getElementById("btn-instruccions");
 const gameBoard = document.getElementById("game-board");
 const puntsLabel = document.getElementById("punts");
-//const nomStorage = localStorage.getItem("nom");
-const nomStorage = document.cookie.split("=")[1];
+const bestPlayerLabel = document.getElementById("best-player");
+const highscoreLabel = document.getElementById("highscore");
 
 // DECLARAR EVENTS
 
@@ -16,9 +16,11 @@ btnInstruccions.addEventListener("click", mostrarInstruccions);
 const bc = new BroadcastChannel("joc_parelles");
 const paraules = ["poma", "plàtan", "maduixa", "pera", "kiwi", "taronja", "mandarina", "llimona", "raïm", "cirera"];
 const cartes = [...paraules, ...paraules];
+const nomStorage = localStorage.getItem("bestPlayer");
 let cartesSeleccionades = [];
 let parellesEncertades = 0;
 let punts = 0;
+let highscore = 0;
 let win;
 var bodyBgColor;
 const htmlInstruccions = `
@@ -41,6 +43,10 @@ const htmlInstruccions = `
 `;
 
 // FUNCIONALITAT
+
+nom.textContent = document.cookie.split("=")[1];
+bestPlayerLabel.textContent = localStorage.getItem("bestPlayer");
+highscoreLabel.textContent = localStorage.getItem("highscore");
 
 function mostrarInstruccions() {
     win = window.open("", "", "width=400,height=400");
@@ -96,7 +102,11 @@ function comprovarCoincidencia() {
 }
 
 function finalitzaJoc() {
-    
+    if (punts > highscore) {
+        highscore = punts;
+        localStorage.setItem("bestPlayer", nom.textContent);
+        localStorage.setItem("highscore", highscore);
+    }
 }
 
 function cambiarColorDeFons() {
@@ -110,8 +120,6 @@ function cambiarColorDeFons() {
     
     sessionStorage.setItem("color", bodyBgColor);
 }
-
-nom.textContent = nomStorage;
 
 cambiarColorDeFons();
 crearCartes();

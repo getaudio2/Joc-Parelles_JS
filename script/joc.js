@@ -3,6 +3,7 @@
 const nom = document.getElementById("nom");
 const btnInstruccions = document.getElementById("btn-instruccions");
 const gameBoard = document.getElementById("game-board");
+const puntsLabel = document.getElementById("punts");
 //const nomStorage = localStorage.getItem("nom");
 const nomStorage = document.cookie.split("=")[1];
 
@@ -16,6 +17,8 @@ const bc = new BroadcastChannel("joc_parelles");
 const paraules = ["poma", "plàtan", "maduixa", "pera", "kiwi", "taronja", "mandarina", "llimona", "raïm", "cirera"];
 const cartes = [...paraules, ...paraules];
 let cartesSeleccionades = [];
+let parellesEncertades = 0;
+let punts = 0;
 let win;
 var bodyBgColor;
 const htmlInstruccions = `
@@ -51,22 +54,49 @@ function crearCartes() {
         carta.style.backgroundColor = "blue";
         carta.style.borderRadius = "10px";
         carta.textContent = valor;
+        carta.style.color = "blue";
         carta.addEventListener("click", () => girarCarta(carta));
         gameBoard.appendChild(carta);
       });
 }
 
 function girarCarta(carta) {
+    carta.disabled = true;
     carta.style.backgroundColor = "grey";
+    carta.style.color = "white";
     cartesSeleccionades.push(carta);
 
-    if (cartesSeleccionades === 2) {
+    if (cartesSeleccionades.length === 2) {
         comprovarCoincidencia();
     }
 }
 
 function comprovarCoincidencia() {
     const [carta1, carta2] = cartesSeleccionades;
+    if (carta1.textContent === carta2.textContent) {
+        punts += 10;
+        puntsLabel.textContent = punts;
+        parellesEncertades++;
+        if (parellesEncertades == paraules.length) finalitzaJoc();
+    } else {
+        setTimeout(() => {
+            carta1.disabled = false;
+            carta2.disabled = false;
+            carta1.style.backgroundColor = "blue";
+            carta2.style.backgroundColor = "blue";
+            carta1.style.color = "blue";
+            carta2.style.color = "blue";
+    
+            punts -= 3;
+            if (punts < 0) punts = 0;
+            puntsLabel.textContent = punts;
+        }, 1000);
+    }
+    cartesSeleccionades = [];
+}
+
+function finalitzaJoc() {
+    
 }
 
 function cambiarColorDeFons() {

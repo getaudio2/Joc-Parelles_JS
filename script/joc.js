@@ -13,10 +13,12 @@ btnInstruccions.addEventListener("click", mostrarInstruccions);
 
 // DECLARAR VARIABLES Y CONSTANTS
 
-const bc = new BroadcastChannel("joc_parelles");
+const broadcastChannel = new BroadcastChannel("joc_parelles");
 const paraules = ["poma", "plàtan", "maduixa", "pera", "kiwi", "taronja", "mandarina", "llimona", "raïm", "cirera"];
 const cartes = [...paraules, ...paraules];
 const nomStorage = localStorage.getItem("bestPlayer");
+let missatge = "";
+let estatJoc = "";
 let cartesSeleccionades = [];
 let parellesEncertades = 0;
 let punts = 0;
@@ -47,6 +49,9 @@ const htmlInstruccions = `
 nom.textContent = document.cookie.split("=")[1];
 bestPlayerLabel.textContent = localStorage.getItem("bestPlayer");
 highscoreLabel.textContent = localStorage.getItem("highscore");
+estatJoc = "En joc";
+
+actualitzarBroadcastChannel();
 
 function mostrarInstruccions() {
     win = window.open("", "", "width=400,height=400");
@@ -83,6 +88,8 @@ function comprovarCoincidencia() {
         punts += 10;
         puntsLabel.textContent = punts;
         parellesEncertades++;
+        actualitzarBroadcastChannel();
+
         if (parellesEncertades == paraules.length) finalitzaJoc();
     } else {
         setTimeout(() => {
@@ -96,17 +103,23 @@ function comprovarCoincidencia() {
             punts -= 3;
             if (punts < 0) punts = 0;
             puntsLabel.textContent = punts;
+            actualitzarBroadcastChannel();
         }, 1000);
     }
     cartesSeleccionades = [];
 }
 
 function finalitzaJoc() {
+    estatJoc = "Partida finalitzada";
+    actualitzarBroadcastChannel();
+
     if (punts > highscore) {
         highscore = punts;
         localStorage.setItem("bestPlayer", nom.textContent);
         localStorage.setItem("highscore", highscore);
     }
+
+    window.location.assign("jocFinalitzat.html");
 }
 
 function cambiarColorDeFons() {
@@ -119,6 +132,11 @@ function cambiarColorDeFons() {
     }
     
     sessionStorage.setItem("color", bodyBgColor);
+}
+
+function actualitzarBroadcastChannel() {
+    missatge = "NOM: " + nom.textContent + ", PUNTS: " + punts + ", ESTAT PARTIDA: " + estatJoc;
+    broadcastChannel.postMessage(missatge);
 }
 
 cambiarColorDeFons();

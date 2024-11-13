@@ -33,6 +33,8 @@ function comencarPartida(){
 }
 
 function borrarPartida(){
+    estatPartida.textContent = "No hi ha cap partida en joc";
+    localStorage.removeItem("partidaComencada");
     win.close();
 }
 

@@ -5,7 +5,6 @@ const btnInstruccions = document.getElementById("btn-instruccions");
 const gameBoard = document.getElementById("game-board");
 const puntsLabel = document.getElementById("punts");
 const bestPlayerLabel = document.getElementById("best-player");
-const highscoreLabel = document.getElementById("highscore");
 
 // DECLARAR EVENTS
 
@@ -16,7 +15,9 @@ btnInstruccions.addEventListener("click", mostrarInstruccions);
 const broadcastChannel = new BroadcastChannel("joc_parelles");
 const paraules = ["poma", "plàtan", "maduixa", "pera", "kiwi", "taronja", "mandarina", "llimona", "raïm", "cirera"];
 const cartes = [...paraules, ...paraules];
+const nomCookie = document.cookie.split("=")[1];
 const nomStorage = localStorage.getItem("bestPlayer");
+const highscoreStorage = localStorage.getItem("highscore");
 let missatge = "";
 let estatJoc = "";
 let cartesSeleccionades = [];
@@ -45,12 +46,19 @@ const htmlInstruccions = `
 `;
 
 // FUNCIONALITAT
+if (localStorage.getItem("partidaComencada") != null) {
+    alert("Hi ha una partida començada");
+    window.close();
+}
 
-nom.textContent = document.cookie.split("=")[1];
-bestPlayerLabel.textContent = localStorage.getItem("bestPlayer");
-highscoreLabel.textContent = localStorage.getItem("highscore");
+localStorage.setItem("partidaComencada", true);
+nom.textContent = nomCookie;
+bestPlayerLabel.textContent = "JUGADOR: " + nomStorage + " - PUNTS: " + highscoreStorage;
 estatJoc = "En joc";
 
+actualitzarLabelPunts();
+cambiarColorDeFons();
+crearCartes();
 actualitzarBroadcastChannel();
 
 function mostrarInstruccions() {
@@ -86,7 +94,7 @@ function comprovarCoincidencia() {
     const [carta1, carta2] = cartesSeleccionades;
     if (carta1.textContent === carta2.textContent) {
         punts += 10;
-        puntsLabel.textContent = punts;
+        actualitzarLabelPunts();
         parellesEncertades++;
         actualitzarBroadcastChannel();
 
@@ -102,7 +110,8 @@ function comprovarCoincidencia() {
     
             punts -= 3;
             if (punts < 0) punts = 0;
-            puntsLabel.textContent = punts;
+
+            actualitzarLabelPunts();
             actualitzarBroadcastChannel();
         }, 1000);
     }
@@ -119,7 +128,7 @@ function finalitzaJoc() {
         localStorage.setItem("highscore", highscore);
     }
 
-    window.location.assign("jocFinalitzat.html");
+    window.location.assign("jocFinalitzat.html", "_self");
 }
 
 function cambiarColorDeFons() {
@@ -139,5 +148,6 @@ function actualitzarBroadcastChannel() {
     broadcastChannel.postMessage(missatge);
 }
 
-cambiarColorDeFons();
-crearCartes();
+function actualitzarLabelPunts() {
+    puntsLabel.textContent = "Punts: " + punts.toString();
+}
